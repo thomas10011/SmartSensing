@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/ort3"
+        android:layout_width="120dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/orientationX"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ort2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="212dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/orientationY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ort1"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="304dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/orientationZ"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvx"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/accelerationX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="加速度x" />
+
+    <TextView
+        android:id="@+id/tvy"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="212dp"
+        android:text="@string/accelerationY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="加速度y" />
+
+    <TextView
+        android:id="@+id/tvz"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="304dp"
+        android:text="@string/accelerationZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="加速度z" />
+
+    <TextView
+        android:id="@+id/gvx"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="145dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/gyroscopeX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="角速度x" />
+
+    <TextView
+        android:id="@+id/gvy"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="144dp"
+        android:layout_marginTop="212dp"
+        android:text="@string/gyroscopeY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="角速度y" />
+
+    <TextView
+        android:id="@+id/gvz"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="144dp"
+        android:layout_marginTop="304dp"
+        android:text="@string/gyroscopeZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="角速度z" />
+
+    <Button
+        android:id="@+id/bt_start"
+        android:layout_width="168dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="445dp"
+        android:text="@string/startRecord"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/bt_stop"
+        android:layout_width="166dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="445dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/stopRecord"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/unLockText"
+        android:layout_width="245dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="上次解锁花费时间："
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

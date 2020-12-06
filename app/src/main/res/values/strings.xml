@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">SmartSensing</string>
+    <string name="textview">TextView</string>
+
+    <string name="accelerationX">X_加速度</string>
+    <string name="accelerationY">Y_加速度</string>
+    <string name="accelerationZ">Z_加速度</string>
+
+    <string name="gyroscopeX">X_角速度</string>
+    <string name="gyroscopeY">Y_角速度</string>
+    <string name="gyroscopeZ">Z_角速度</string>
+
+    <string name="orientationX">X_倾斜角</string>
+    <string name="orientationY">Y_倾斜角</string>
+    <string name="orientationZ">Z_倾斜角</string>
+
+    <string name="startRecord">开始记录数据</string>
+    <string name="stopRecord">停止记录数据</string>
+
+</resources>
