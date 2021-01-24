@@ -3,22 +3,14 @@ package cn.edu.whu.smartsensing;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -26,17 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
 import cn.edu.whu.smartsensing.service.SensorService;
@@ -227,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(v.getId() == R.id.bt_upload) {
                 Log.i("Main Activity", "-----------准备开始上传文件---------");
-                UploadUtil.uploadFile();
+                UploadUtil.uploadSensorData();
 
             }
         }

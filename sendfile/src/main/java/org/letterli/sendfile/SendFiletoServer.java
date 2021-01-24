@@ -2,12 +2,13 @@ package org.letterli.sendfile;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Connection;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -20,12 +21,6 @@ public class SendFiletoServer {
     private static volatile SendFiletoServer instance;
 
     private final String TAG = "UploadFile";
-    // 需要识别的文件
-
-    private String FILE_NAME;
-    private String FILE_PATH;
-    private MediaType MEDIA_TYPE;
-    private String TO_URL;
 
     private static int TIME_OUT = 60*1000;                          //超时时间为60s*1000 = 1000min
     private static final String CHARSET = "utf-8";                         //编码格式
@@ -52,61 +47,48 @@ public class SendFiletoServer {
         return instance;
     }
 
-
-    // 运行子线程
-
-    public Runnable fileSend = new Runnable() {
-        @Override
-        public void run() {
-            //准备文件与传入参数
-            // Use the imgur image upload API as documented at https://api.imgur.com/endpoints/image
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("myfile", FILE_NAME,
-                            RequestBody.create(MEDIA_TYPE, new File(FILE_PATH)))
-                    .build();
-            try {
-                Log.d(TAG+" requestBody", String.valueOf(requestBody.contentLength()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Request request = new Request.Builder()
-                    .addHeader("Connection","keep-alive")
-                    .url(TO_URL)
-                    .post(requestBody)
-                    .build();
-            Log.i(TAG+" request", String.valueOf(request.body()));
-
-            Response response = null;
-            try {
-                 response = client.newCall(request).execute();
-                responseData = response.body().string();
-                Log.i(TAG, responseData);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-    };
-
-    public void start() {
+    public void upload(final String filePath, final String fileName, final MediaType mediaType, final String to_url) {
         Log.i(TAG+"timeout-set", String.valueOf(TIME_OUT));
         client = new OkHttpClient.Builder()
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(TIME_OUT,TimeUnit.SECONDS)
                 .build();
         synchronized (this) {
-            new Thread(fileSend).start();
-        }
-    }
+            new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        //准备文件与传入参数
+                        RequestBody requestBody = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("myfile", fileName,
+                                        RequestBody.create(mediaType, new File(filePath)))
+                                .build();
+                        try {
+                            Log.d(TAG+" requestBody", String.valueOf(requestBody.contentLength()));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-    public void setFile(String filePath, String fileName, MediaType mediaType, String to_url) {
-        this.FILE_PATH = filePath;
-        this.MEDIA_TYPE = mediaType;
-        this.TO_URL = to_url;
-        this.FILE_NAME = fileName;
+                        Request request = new Request.Builder()
+                                .addHeader("Connection","keep-alive")
+                                .url(to_url)
+                                .post(requestBody)
+                                .build();
+                        Log.i(TAG+" request", String.valueOf(request.body()));
+
+                        Response response = null;
+                        try {
+                            response = client.newCall(request).execute();
+                            responseData = response.body().string();
+                            Log.i(TAG, responseData);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            ).start();
+        }
     }
 
     public void setTimeOut(int time){

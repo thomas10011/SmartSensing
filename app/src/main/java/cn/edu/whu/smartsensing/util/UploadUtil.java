@@ -44,23 +44,18 @@ public class UploadUtil {
         return s;
     }
 
-    public static void uploadFile() {
-        filelist_2 = getFilesAllName(filepath_sensor);
-        int length = filelist_2.size();
-        Log.d(TAG_sensor,String.valueOf(length));
-        filepath_2 = filelist_2.get(length-2);
-        Log.d(TAG_sensor,filepath_2);
-        filename_2 = filepath_2.replaceAll(filepath_sensor+"/","");
-        Log.d(TAG_sensor,filename_2);
-
-        /*----Add SendFile Code----*/
-        sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
-        sendFiletoServer.setFile(
-                filepath_2, filename_2, MediaType.parse("text/csv"),
-                "http://192.168.0.104:19526/file");
-        Log.d("Upload_2","try");
-        /*----Add SendFile Code----*/
-        sendFiletoServer.start();
+    public static void uploadSensorData() {
+        getFilesAllName(filepath_sensor).forEach(
+                file -> {
+                    String fileName = file.replaceAll(filepath_sensor+"/","");
+                    Log.i("Upload Util", "准备开始上传" + fileName);
+                    /*----Add SendFile Code----*/
+                    sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
+                    sendFiletoServer.upload(
+                            filepath_sensor + "/" + fileName, fileName, MediaType.parse("text/csv"),
+                            "http://192.168.0.104:19526/file");
+                }
+        );
     }
 
 }
