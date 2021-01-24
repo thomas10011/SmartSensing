@@ -17,4 +17,6 @@
     <string name="startRecord">开始记录数据</string>
     <string name="stopRecord">停止记录数据</string>
 
+    <string name="uploadFile">开始上传文件</string>
+
 </resources>

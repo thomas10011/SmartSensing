@@ -40,6 +40,7 @@ import java.util.Arrays;
 
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
 import cn.edu.whu.smartsensing.service.SensorService;
+import cn.edu.whu.smartsensing.util.UploadUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private final ServiceConnection connection = new ServiceConnection() {
-        //可交互的后台服务与普通服务的不同之处，就在于这个connection建立起了两者的联系
+        // 可交互的后台服务与普通服务的不同之处，就在于这个connection建立起了两者的联系
         @Override
         public void onServiceDisconnected(ComponentName name) {
             sensorService = null;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             sensorService = ((SensorService.SensorServiceBinder) service).getService(); // 获取service实例
-            sensorService.setCustomSensorEventListener(
+            sensorService.setCustomSensorEventListener (
                     new CustomSensorEventListener() {
                         @Override
                         public void onSensorChanged(SensorEvent sensorEvent, float[] values) {
@@ -204,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @Override
     public void onClick(View v)
     {
         try {
@@ -214,13 +216,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startForegroundService(sensorIntent);
                 bindService(sensorIntent, connection, BIND_AUTO_CREATE);
 
-                return;
+
             }
-            if(v.getId()== R.id.bt_stop)
+            else if(v.getId()== R.id.bt_stop)
             {
+                Log.i("Main Activity", "-----------停止记录数据---------");
                 unbindService(connection);
                 stopService(sensorIntent);
-                return;
+
+            }
+            else if(v.getId() == R.id.bt_upload) {
+                Log.i("Main Activity", "-----------准备开始上传文件---------");
+                UploadUtil.uploadFile();
+
             }
         }
         catch (Exception e) {

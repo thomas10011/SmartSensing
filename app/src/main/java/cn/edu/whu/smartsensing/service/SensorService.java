@@ -1,6 +1,5 @@
 package cn.edu.whu.smartsensing.service;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -36,7 +35,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 import cn.edu.whu.smartsensing.R;
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
@@ -79,7 +77,8 @@ public class SensorService extends Service implements SensorEventListener {
     private final float[] orientationAngles = new float[3];
 
     File recordingFile;//储存AudioRecord录下来的文件
-    boolean isRecording = false; //true表示正在录音
+    boolean isRecordingAudio = false; //true表示正在录音
+    boolean isRecordingData = true; // 是否记录传感器数据
     AudioRecord audioRecord = null;
     File parent = null;//文件目录
     int bufferSize = 0;//最小缓冲区大小
@@ -142,13 +141,18 @@ public class SensorService extends Service implements SensorEventListener {
         }
 
         lastRecordTime = LocalDateTime.now();
-        dataFileName = lastRecordTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "-" + "data.txt";
+        // 时间戳加data.txt
+        dataFileName = lastRecordTime.toInstant(ZoneOffset.UTC).toEpochMilli() + "-" + "data.txt";
 //        audioFileName = lastRecordTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "-" + "audio.pcm";
 
 
         accelerationFilesDir = this.getExternalFilesDir("").toString() + "/AccelerationRecord/";
         audioFilesDir = this.getExternalFilesDir("").toString()+ "/AudioRecord/";
         unLockTimeFilesDir = this.getExternalFilesDir("").toString()+ "/UnLockRecord/";
+
+        //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(accelerationFilesDir, dataFileName);
+
         // 初始化音频记录
         initAudioRecord();
         telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -183,12 +187,9 @@ public class SensorService extends Service implements SensorEventListener {
                         .setTicker("ticker")
                         .build();
 
-// Notification ID cannot be 0.
+        // Notification ID cannot be 0.
         startForeground(100, notification);
-        // 记录音频
-//        recordAudio();
-        Log.i(TAG, "zhangjieqiong onStartCommand");
-         //        return super.onStartCommand(intent, flags, startId);
+        //        return super.onStartCommand(intent, flags, startId);
         // 开始播放音乐
         new Thread(this::startPlayMusic).start();
         System.out.println("调用了start方法");
@@ -196,8 +197,9 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
     public void onDestroy() {
-
         super.onDestroy();
+        System.out.println("调用了destroy方法");
+
         stopPlayMusic();
         stopRecordAudio();
         sensorEventListener = null;
@@ -208,7 +210,12 @@ public class SensorService extends Service implements SensorEventListener {
         }
         unregisterReceiver(lockScreenReceiver);
 //        // 在onDestory方法中重新启动自己，即Service被销毁时调用onDestory，就执行重新启动代码。
-        System.out.println("调用了destroy方法");
+
+        isRecordingData = false;
+        boolean result = mSensorMgr.flush(this);
+        if (result) { Log.i("sensor service", "flush成功"); }
+        else { Log.i("sensor service", "flush失败"); }
+        stopSelf();
 
     };
 
@@ -240,6 +247,7 @@ public class SensorService extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        if (!isRecordingData) { return; }
         float[] values = sensorEvent.values;
         // 根据传感器类型更新数据
         switch (sensorEvent.sensor.getType()) {
@@ -303,8 +311,7 @@ public class SensorService extends Service implements SensorEventListener {
 
     // 将字符串写入到文本文件中
     private void writeTxtToFile(String strcontent, String filePath, String fileName) {
-        //生成文件夹之后，再生成文件，不然会出错
-        makeFilePath(filePath, fileName);
+
 
         String strFilePath = filePath + fileName;
         // 每次写入时，都换行写
@@ -329,9 +336,9 @@ public class SensorService extends Service implements SensorEventListener {
 
     //开始录音
     public void recordAudio() {
-        isRecording = true;
+        isRecordingAudio = true;
         new Thread(() -> {
-            isRecording = true;
+            isRecordingAudio = true;
 
             recordingFile = makeFilePath(audioFilesDir, generateAudioFileName());
 
@@ -340,7 +347,7 @@ public class SensorService extends Service implements SensorEventListener {
                 byte[] buffer = new byte[bufferSize];
                 audioRecord.startRecording();//开始录音
                 int r = 0;
-                while (isRecording) {
+                while (isRecordingAudio) {
                     int bufferReadResult = audioRecord.read(buffer,0,bufferSize);
                     for (int i = 0; i < bufferReadResult; i++)
                     {
@@ -362,7 +369,7 @@ public class SensorService extends Service implements SensorEventListener {
     //停止录音
     public void stopRecordAudio()
     {
-        isRecording = false;
+        isRecordingAudio = false;
     }
 
     // 生成文件

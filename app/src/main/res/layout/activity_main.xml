@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+
     <TextView
         android:id="@+id/ort3"
         android:layout_width="120dp"
@@ -127,6 +129,18 @@
         android:layout_marginEnd="16dp"
         android:text="@string/stopRecord"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/bt_upload"
+        android:layout_width="168dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="580dp"
+        android:onClick="onClick"
+        android:text="@string/uploadFile"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
