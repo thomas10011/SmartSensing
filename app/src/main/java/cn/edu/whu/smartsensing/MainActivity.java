@@ -26,14 +26,6 @@ import cn.edu.whu.smartsensing.util.UploadUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private String dataFileName;
-    private String audioFileName;
-    private String audioFilesDir;
-    private String accelerationFilesDir;
-    private String unLockTimeFilesDir;
-
-    private String screenStatus;
-
     private SensorManager mSensorMgr;
     // xyz方向的加速度
     private TextView tvx = null;
@@ -51,34 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView unLockText = null;
 
-
-    // 上一次记录的时间
-    private LocalDateTime lastRecordTime;
-    // 上一次屏幕电量时间
-    private LocalDateTime lastScreenOnTime;
-
-    private final int ACCELERATION_DELAY = 1000000;   // 10ms
-
-    // 加速度数据
-    private float accelerationX;
-    private float accelerationY;
-    private float accelerationZ;
-
-    // 角速度数据
-    private float gyroscopeX;
-    private float gyroscopeY;
-    private float gyroscopeZ;
-
-
-    private final float[] accelerometerReading = new float[3];
-    private final float[] magnetometerReading = new float[3];
-
-    private final float[] rotationMatrix = new float[9];
-    private final float[] orientationAngles = new float[3];
-
-    private final int TIME_INTERVAL = 10; // 10ms一次定时任务
-    private PendingIntent pendingIntent;
-    private AlarmManager alarmManager;
 
     Intent sensorIntent;
     private SensorService sensorService;
@@ -112,10 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 获取传感器服务
         mSensorMgr = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
-        accelerationFilesDir = this.getExternalFilesDir("").toString() + "/AccelerationRecord/";
-        audioFilesDir = this.getExternalFilesDir("").toString()+ "/AudioRecord/";
-        unLockTimeFilesDir = this.getExternalFilesDir("").toString()+ "/UnLockRecord/";
-        // 初始化音频记录
+
     }
 
     private final ServiceConnection connection = new ServiceConnection() {

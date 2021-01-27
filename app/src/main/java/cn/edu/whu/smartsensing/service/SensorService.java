@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 
 import cn.edu.whu.smartsensing.R;
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
+import cn.edu.whu.smartsensing.util.FileUtil;
 
 public class SensorService extends Service implements SensorEventListener {
 
@@ -151,7 +152,7 @@ public class SensorService extends Service implements SensorEventListener {
         unLockTimeFilesDir = this.getExternalFilesDir("").toString()+ "/UnLockRecord/";
 
         //生成文件夹之后，再生成文件，不然会出错
-        makeFilePath(accelerationFilesDir, dataFileName);
+        FileUtil.makeFilePath(accelerationFilesDir, dataFileName);
 
         // 初始化音频记录
         initAudioRecord();
@@ -227,7 +228,7 @@ public class SensorService extends Service implements SensorEventListener {
         // 创建AudioRecorder对象
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRateInHz,channelConfig, audioFormat, bufferSize);
 
-        parent = makeRootDirectory(this.getExternalFilesDir("").toString()+ "/AudioRecord/");
+        parent = FileUtil.makeRootDirectory(this.getExternalFilesDir("").toString()+ "/AudioRecord/");
 
 
     }
@@ -340,7 +341,7 @@ public class SensorService extends Service implements SensorEventListener {
         new Thread(() -> {
             isRecordingAudio = true;
 
-            recordingFile = makeFilePath(audioFilesDir, generateAudioFileName());
+            recordingFile = FileUtil.makeFilePath(audioFilesDir, generateAudioFileName());
 
             try {
                 DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));
@@ -370,51 +371,6 @@ public class SensorService extends Service implements SensorEventListener {
     public void stopRecordAudio()
     {
         isRecordingAudio = false;
-    }
-
-    // 生成文件
-    private File makeFilePath(String filePath, String fileName) {
-        File file = null;
-        makeRootDirectory(filePath);
-        try {
-            file = new File(filePath + fileName);
-            if (!file.exists()) {
-                boolean createResult = file.createNewFile();
-                if (createResult) {
-                    System.out.println("创建文件成功");
-                    return file;
-                }
-                else {
-                    System.out.println("创建文件失败");
-                    return null;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // 生成文件夹
-    private static File makeRootDirectory(String filePath) {
-        File file = null;
-        try {
-            file = new File(filePath);
-            if (!file.exists()) {
-                boolean mkdir = file.mkdir();
-                if (mkdir) {
-                    System.out.println("创建目录成功");
-
-                }
-                else {
-                    System.out.println("创建目录失败");
-                }
-            }
-
-        } catch (Exception e) {
-            Log.i("error:", e + "");
-        }
-        return file;
     }
 
     // Compute the three orientation angles based on the most recent readings from

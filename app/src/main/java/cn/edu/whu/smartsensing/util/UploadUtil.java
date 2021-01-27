@@ -19,13 +19,6 @@ public class UploadUtil {
             "/cn.edu.whu.smartsensing/files/AccelerationRecord";
     private static final String filepath_sensor = "/storage/emulated/0/Android/data" +
             "/cn.edu.whu.smartsensing/files/AccelerationRecord";
-    private static List<String> filelist_1 = new ArrayList<>();
-    private static List<String> filelist_2 = new ArrayList<>();
-    private static String filepath_1 = null;
-    private static String filepath_2 = null;
-    private static String filename_1 = null;
-    private static String filename_2 = null;
-
     private static final String TAG = "UploadFile";
     private static final String TAG_sensor = "UploadFile_sensor";
 
@@ -52,7 +45,7 @@ public class UploadUtil {
                     /*----Add SendFile Code----*/
                     sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
                     sendFiletoServer.upload(
-                            filepath_sensor + "/" + fileName, fileName, MediaType.parse("text/csv"),
+                            file, fileName, MediaType.parse("text/csv"),
                             "http://192.168.0.104:19526/file");
                 }
         );
