@@ -173,8 +173,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(v.getId() == R.id.bt_upload) {
                 Log.i("Main Activity", "-----------准备开始上传文件---------");
-                UploadUtil.uploadSensorData();
-
+                //UploadUtil.uploadSensorData();
+                UploadUtil.uploadAudioData();
             }
         }
         catch (Exception e) {

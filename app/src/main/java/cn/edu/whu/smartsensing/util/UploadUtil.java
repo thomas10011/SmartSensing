@@ -20,6 +20,8 @@ public class UploadUtil {
             "/cn.edu.whu.smartsensing/files/";
     private static final String filepath_sensor = "/storage/emulated/0/Android/data" +
             "/cn.edu.whu.smartsensing/files/AccelerationRecord/";
+    private static final String filepath_audio = "/storage/emulated/0/Android/data" +
+            "/cn.edu.whu.smartsensing/files/AudioRecord/";
     private static final String TAG = "UploadFile";
     private static final String TAG_sensor = "UploadFile_sensor";
 
@@ -29,12 +31,12 @@ public class UploadUtil {
     public static List<String> getFilesAllName(String path) {
         File file=new File(path);
         File[] files=file.listFiles();
-        if (files == null){Log.e("error","空目录");return null;}
+        if (files == null || files.length == 0){ Log.e("error","空目录"); return new ArrayList<>(); }
         List<String> s = new ArrayList<>();
-        for(int i =0;i<files.length;i++){
-            s.add(files[i].getAbsolutePath());
+        for (File value : files) {
+            s.add(value.getAbsolutePath());
         }
-        Log.d("search","getFilesAllName ok.");
+        Log.d("search","getFilesAllName ok in " + path);
         return s;
     }
 
@@ -42,13 +44,40 @@ public class UploadUtil {
         getFilesAllName(filepath_sensor).forEach(
                 file -> {
                     String fileName = file.replaceAll(filepath_sensor,"");
-                    Log.i("Upload Util", "准备开始上传" + fileName);
+                    Log.i("Upload Util", "准备开始上传加速度数据：" + fileName);
                     /*----Add SendFile Code----*/
                     sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
                     sendFiletoServer.upload(
                             file, fileName, MediaType.parse("text/csv"),
                             "http://192.168.0.104:19526/file",
-                            new HashMap<String, String>(){ {put("uid", FileUtil.readFile(filepath, "info"));} });
+                            new HashMap<String, String>(){
+                                    {
+                                        put("uid", FileUtil.readFile(filepath, "info"));
+                                        put("type", "acceleration");
+                                    }
+                            }
+                    )                    ;
+                }
+        );
+    }
+
+    public static void uploadAudioData() {
+        getFilesAllName(filepath_audio).forEach(
+                file -> {
+                    String fileName = file.replaceAll(filepath_audio,"");
+                    Log.i("Upload Util", "准备开始上传音频数据：" + fileName);
+                    /*----Add SendFile Code----*/
+                    sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
+                    sendFiletoServer.upload(
+                            file, fileName, MediaType.parse("text/csv"),
+                            "http://192.168.0.104:19526/file",
+                            new HashMap<String, String>(){
+                                {
+                                    put("uid", FileUtil.readFile(filepath, "info"));
+                                    put("type", "audio");
+                                }
+                            }
+                    )                    ;
                 }
         );
     }
