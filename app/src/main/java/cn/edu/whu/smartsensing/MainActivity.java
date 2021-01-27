@@ -22,10 +22,14 @@ import java.time.LocalDateTime;
 
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
 import cn.edu.whu.smartsensing.service.SensorService;
+import cn.edu.whu.smartsensing.service.UploadService;
+import cn.edu.whu.smartsensing.util.AlarmUtil;
 import cn.edu.whu.smartsensing.util.FileUtil;
 import cn.edu.whu.smartsensing.util.UploadUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private final String tag = "Main Activity";
 
     private SensorManager mSensorMgr;
     // xyz方向的加速度
@@ -79,7 +83,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 获取传感器服务
         mSensorMgr = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
-
+        // 启动定时上传任务
+//        Intent intent = new Intent(this, UploadService.class);
+//        startService(intent);
+        AlarmUtil alarmUtil = AlarmUtil.getInstance(this);
+        alarmUtil.createGetUpAlarmManager();
+        alarmUtil.getUpAlarmManagerStartWork();
     }
 
     private final ServiceConnection connection = new ServiceConnection() {
@@ -173,8 +182,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(v.getId() == R.id.bt_upload) {
                 Log.i("Main Activity", "-----------准备开始上传文件---------");
-                //UploadUtil.uploadSensorData();
-                UploadUtil.uploadAudioData();
             }
         }
         catch (Exception e) {

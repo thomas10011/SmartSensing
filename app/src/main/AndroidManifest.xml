@@ -32,8 +32,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.SensorService" android:exported="true" android:enabled="true">
-        </service>
+        <service android:name=".service.SensorService" android:exported="true" android:enabled="true"/>
+        <service
+            android:name=".service.UploadService"
+            android:enabled="true"
+            android:exported="true"/>
+        <receiver android:name=".service.UploadService$AlarmReceive"/>
     </application>
 
 </manifest>
