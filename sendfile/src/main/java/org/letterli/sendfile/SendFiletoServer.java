@@ -1,11 +1,14 @@
 package org.letterli.sendfile;
 
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +50,7 @@ public class SendFiletoServer {
         return instance;
     }
 
-    public void upload(final String filePath, final String fileName, final MediaType mediaType, final String to_url) {
+    public void upload(final String filePath, final String fileName, final MediaType mediaType, final String to_url,@Nullable final Map<String, String> params) {
         Log.i(TAG+"timeout-set", String.valueOf(TIME_OUT));
         client = new OkHttpClient.Builder()
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
@@ -59,11 +62,18 @@ public class SendFiletoServer {
                     @Override
                     public void run() {
                         //准备文件与传入参数
-                        RequestBody requestBody = new MultipartBody.Builder()
+                        MultipartBody.Builder builder = new MultipartBody.Builder()
                                 .setType(MultipartBody.FORM)
                                 .addFormDataPart("myfile", fileName,
-                                        RequestBody.create(mediaType, new File(filePath)))
-                                .build();
+                                        RequestBody.create(mediaType, new File(filePath)));
+                        if (params != null && !params.isEmpty())
+                            params.forEach(
+                                (k,v) -> {
+                                    if (v != null)
+                                        builder.addFormDataPart(k,v);
+                                }
+                            );
+                        RequestBody requestBody = builder.build();
                         try {
                             Log.d(TAG+" requestBody", String.valueOf(requestBody.contentLength()));
                         } catch (IOException e) {

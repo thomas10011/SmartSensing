@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
 import cn.edu.whu.smartsensing.service.SensorService;
+import cn.edu.whu.smartsensing.util.FileUtil;
 import cn.edu.whu.smartsensing.util.UploadUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FileUtil.generateUUID(this.getExternalFilesDir("").toString() + "/");
+        FileUtil.readFile(this.getExternalFilesDir("").toString(), "/" + "info");
         setContentView(R.layout.activity_main);
 
         Button bt = findViewById(R.id.bt_start);

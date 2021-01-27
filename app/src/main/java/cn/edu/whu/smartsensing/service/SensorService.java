@@ -152,7 +152,7 @@ public class SensorService extends Service implements SensorEventListener {
         unLockTimeFilesDir = this.getExternalFilesDir("").toString()+ "/UnLockRecord/";
 
         //生成文件夹之后，再生成文件，不然会出错
-        FileUtil.makeFilePath(accelerationFilesDir, dataFileName);
+        FileUtil.makeFile(accelerationFilesDir, dataFileName);
 
         // 初始化音频记录
         initAudioRecord();
@@ -228,7 +228,7 @@ public class SensorService extends Service implements SensorEventListener {
         // 创建AudioRecorder对象
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRateInHz,channelConfig, audioFormat, bufferSize);
 
-        parent = FileUtil.makeRootDirectory(this.getExternalFilesDir("").toString()+ "/AudioRecord/");
+        parent = FileUtil.makeFileDirectory(this.getExternalFilesDir("").toString()+ "/AudioRecord/");
 
 
     }
@@ -303,36 +303,12 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
     private void writeData(String data) {
-        writeTxtToFile(data, accelerationFilesDir, dataFileName);
+        FileUtil.writeTxtToFile(data, accelerationFilesDir, dataFileName);
     }
 
     private void writeUnLockTime(Duration duration) {
-        writeTxtToFile(Long.toString(duration.toMillis()), unLockTimeFilesDir, "record.txt");
+        FileUtil.writeTxtToFile(Long.toString(duration.toMillis()), unLockTimeFilesDir, "record.txt");
     }
-
-    // 将字符串写入到文本文件中
-    private void writeTxtToFile(String strcontent, String filePath, String fileName) {
-
-
-        String strFilePath = filePath + fileName;
-        // 每次写入时，都换行写
-        String strContent = strcontent + "\r\n";
-        try {
-            File file = new File(strFilePath);
-            if (!file.exists()) {
-                Log.d("TestFile", "Create the file:" + strFilePath);
-                boolean mkdirs = file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
-            raf.seek(file.length());
-            raf.write(strContent.getBytes());
-            raf.close();
-        } catch (Exception e) {
-            Log.e("TestFile", "Error on write File:" + e);
-        }
-    }
-
 
 
     //开始录音
@@ -341,7 +317,7 @@ public class SensorService extends Service implements SensorEventListener {
         new Thread(() -> {
             isRecordingAudio = true;
 
-            recordingFile = FileUtil.makeFilePath(audioFilesDir, generateAudioFileName());
+            recordingFile = FileUtil.makeFile(audioFilesDir, generateAudioFileName());
 
             try {
                 DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));

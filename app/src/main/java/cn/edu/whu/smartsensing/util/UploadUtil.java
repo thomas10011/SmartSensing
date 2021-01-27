@@ -6,6 +6,7 @@ import org.letterli.sendfile.SendFiletoServer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -16,9 +17,9 @@ public class UploadUtil {
 
     // upload data
     private static final String filepath = "/storage/emulated/0/Android/data" +
-            "/cn.edu.whu.smartsensing/files/AccelerationRecord";
+            "/cn.edu.whu.smartsensing/files/";
     private static final String filepath_sensor = "/storage/emulated/0/Android/data" +
-            "/cn.edu.whu.smartsensing/files/AccelerationRecord";
+            "/cn.edu.whu.smartsensing/files/AccelerationRecord/";
     private static final String TAG = "UploadFile";
     private static final String TAG_sensor = "UploadFile_sensor";
 
@@ -40,13 +41,14 @@ public class UploadUtil {
     public static void uploadSensorData() {
         getFilesAllName(filepath_sensor).forEach(
                 file -> {
-                    String fileName = file.replaceAll(filepath_sensor+"/","");
+                    String fileName = file.replaceAll(filepath_sensor,"");
                     Log.i("Upload Util", "准备开始上传" + fileName);
                     /*----Add SendFile Code----*/
                     sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
                     sendFiletoServer.upload(
                             file, fileName, MediaType.parse("text/csv"),
-                            "http://192.168.0.104:19526/file");
+                            "http://192.168.0.104:19526/file",
+                            new HashMap<String, String>(){ {put("uid", FileUtil.readFile(filepath, "info"));} });
                 }
         );
     }
