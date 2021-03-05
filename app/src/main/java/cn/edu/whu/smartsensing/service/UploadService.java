@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import cn.edu.whu.smartsensing.util.AlarmUtil;
 import cn.edu.whu.smartsensing.util.UploadUtil;
@@ -32,11 +33,12 @@ public class UploadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        Random random = new Random(114514);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 30);
+        // 18:00 到 23:59
+        calendar.set(Calendar.HOUR_OF_DAY, 18 + random.nextInt(6));
+        calendar.set(Calendar.MINUTE, random.nextInt(60));
         calendar.set(Calendar.SECOND, 0);//这里代表 21.14.00
 
         //通过AlarmManager定时启动广播
@@ -52,7 +54,6 @@ public class UploadService extends Service {
 //            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
 //        }
         Log.i(tag, "开始定时上传任务...");
-        UploadUtil.uploadSensorData();
         UploadUtil.uploadSensorData();
         AlarmUtil.getInstance(getApplicationContext()).getUpAlarmManagerWorkOnOthers();
 

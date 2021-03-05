@@ -14,9 +14,11 @@
     <string name="orientationY">Y_倾斜角</string>
     <string name="orientationZ">Z_倾斜角</string>
 
-    <string name="startRecord">开始记录数据</string>
-    <string name="stopRecord">停止记录数据</string>
+    <string name="startRecord">开始记录运动数据</string>
+    <string name="stopRecord">停止记录运动数据</string>
 
-    <string name="uploadFile">开始上传文件</string>
+    <string name="uploadFile">主动上传数据</string>
+    <string name="add_record">添加记录</string>
+    <string name="delete_record">删除记录</string>
 
 </resources>
