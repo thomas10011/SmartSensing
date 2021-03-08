@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmartSensing</string>
+    <string name="app_name">MC-Tracking V1.1</string>
     <string name="textview">TextView</string>
 
     <string name="accelerationX">X_加速度</string>

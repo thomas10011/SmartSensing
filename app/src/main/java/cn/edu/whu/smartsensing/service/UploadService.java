@@ -54,7 +54,8 @@ public class UploadService extends Service {
 //            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
 //        }
         Log.i(tag, "开始定时上传任务...");
-        UploadUtil.uploadSensorData();
+        UploadUtil.execUploadData("acceleration");
+        UploadUtil.uploadMcFile();
         AlarmUtil.getInstance(getApplicationContext()).getUpAlarmManagerWorkOnOthers();
 
         return super.onStartCommand(intent, flags, startId);

@@ -115,21 +115,21 @@
         android:layout_width="168dp"
         android:layout_height="72dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="620dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/startRecord"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/bt_stop"
         android:layout_width="166dp"
         android:layout_height="72dp"
-        android:layout_marginTop="620dp"
         android:layout_marginEnd="28dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/stopRecord"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
     <Button
@@ -157,15 +157,15 @@
     <ListView
         android:id="@+id/recordList"
         android:layout_width="191dp"
-        android:layout_height="322dp"
+        android:layout_height="348dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="34dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="43dp"
         android:choiceMode="singleChoice"
         app:layout_constraintBottom_toTopOf="@+id/bt_start"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvz"
-        app:layout_constraintVertical_bias="0.437" />
+        app:layout_constraintTop_toBottomOf="@+id/mctext"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/add_record"
@@ -197,10 +197,8 @@
         android:layout_height="32dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="12dp"
         android:text="月经日期记录"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBottom_toTopOf="@+id/recordList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvz" />
 

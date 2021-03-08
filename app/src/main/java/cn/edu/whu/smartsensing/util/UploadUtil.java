@@ -3,6 +3,8 @@ package cn.edu.whu.smartsensing.util;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.Nullable;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.hsf.HSFJSONUtils;
@@ -15,10 +17,15 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import cn.edu.whu.smartsensing.service.FileListCallbackService;
 import cn.edu.whu.smartsensing.service.McDataCallbackService;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -40,11 +47,13 @@ public class UploadUtil {
             "/cn.edu.whu.smartsensing/files/AccelerationRecord/";
     private static final String filepath_audio = "/storage/emulated/0/Android/data" +
             "/cn.edu.whu.smartsensing/files/AudioRecord/";
+    private static final String filepath_mc = "/storage/emulated/0/Android/data" +
+            "/cn.edu.whu.smartsensing/files/mc/";
     private static final String TAG = "UploadFile";
     private static final String TAG_sensor = "UploadFile_sensor";
 
-    // private static String server = "http://124.156.134.117/";
-    private static String server = "http://host.tanhuiri.cn:19526/";
+    private static String server = "http://124.156.134.117/";
+    // private static String server = "http://host.tanhuiri.cn:19526/";
 
     //  遍历某路径下所有文件,生成list
     public static List<String> getFilesAllName(String path) {
@@ -59,29 +68,58 @@ public class UploadUtil {
         return s;
     }
 
-    public static void uploadSensorData() {
+
+    public static void execUploadData(String type) {
+        // 要首先查询文件列表
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Request request = new Request.Builder()
+                                .addHeader("Connection","keep-alive")
+                                .url(server + "api/file/" + FileUtil.readFile(filepath, "info") + "?type=" + type)
+                                .get()
+                                .build();
+                        client.newCall(request).enqueue(new FileListCallbackService(type));
+
+                    }
+                }
+        ).start();
+    }
+
+    public static void uploadSensorData(@Nullable Map<String, String> fileList) {
+        // 先查询服务器上面的文件列表
         getFilesAllName(filepath_sensor).forEach(
                 file -> {
                     String fileName = file.replaceAll(filepath_sensor,"");
                     Log.i("Upload Util", "准备开始上传加速度数据：" + fileName);
-                    /*----Add SendFile Code----*/
-                    sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
-                    sendFiletoServer.upload(
-                            file, fileName, MediaType.parse("text/csv"),
-                            server + "/api/file",
-                            new HashMap<String, String>(){
+                    String fileLen = String.valueOf(new File(file).length());
+                    // 查询不到文件列表 或者文件列表中不包含该文件 或者包含该文件但大小不一致 则上传该文件
+                    if (fileList == null || !fileList.containsKey(fileName) || !fileList.get(fileName).equals(fileLen) ) {
+                        /*----Add SendFile Code----*/
+                        sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
+                        sendFiletoServer.upload(
+                                file, fileName, MediaType.parse("text/csv"),
+                                server + "api/file",
+                                new HashMap<String, String>(){
                                     {
                                         put("uid", FileUtil.readFile(filepath, "info"));
                                         put("type", "acceleration");
                                     }
-                            }
-                    )                    ;
+                                }
+                        );
+                    }
+                    else {
+                        Log.i(TAG, "uploadSensorData: " + "文件" + fileName + "在服务器上已存在，略过");
+                    }
                 }
         );
     }
 
 
-    public static void uploadAudioData() {
+    public static void uploadAudioData(@Nullable Map<String, String> fileList) {
+        // 先查询服务器上面的文件列表
+
         getFilesAllName(filepath_audio).forEach(
                 file -> {
                     String fileName = file.replaceAll(filepath_audio,"");
@@ -102,22 +140,12 @@ public class UploadUtil {
         );
     }
 
-    private static int TIME_OUT = 60*1000;                          //超时时间为60s*1000 = 1000min
-    private static final String CHARSET = "utf-8";                         //编码格式
-    private static final String PREFIX = "--";                            //前缀
-    private static final String BOUNDARY = UUID.randomUUID().toString();  //边界标识 随机生成
-    private static final String CONTENT_TYPE = "multipart/form-data";     //内容类型
-    private static final String LINE_END = "\r\n";                        //换行
-    private static final String IMGUR_CLIENT_ID = "...";
+    private static final int TIME_OUT = 60*1000;                          //超时时间为60s*1000 = 1000min
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(TIME_OUT, TimeUnit.SECONDS).readTimeout(TIME_OUT,TimeUnit.SECONDS).build();;
 
 
     public static void uploadMcData(List<String> date) {
-        client = new OkHttpClient.Builder()
-                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .readTimeout(TIME_OUT,TimeUnit.SECONDS)
-                .build();
         new Thread(
                 new Runnable() {
                     @Override
@@ -133,7 +161,7 @@ public class UploadUtil {
 
                         Request request = new Request.Builder()
                                 .addHeader("Connection","keep-alive")
-                                .url(server + "/api/mc-data/" + FileUtil.readFile(filepath, "info"))
+                                .url(server + "api/mc-data/" + FileUtil.readFile(filepath, "info"))
                                 .post(requestBody)
                                 .build();
                         Log.i(TAG+" request", String.valueOf(request.body()));
@@ -151,6 +179,28 @@ public class UploadUtil {
         ).start();
     }
 
+    public static void uploadMcFile() {
+        // 始终上传更新
+        getFilesAllName(filepath_mc).forEach(
+                file -> {
+                    String fileName = file.replaceAll(filepath_mc,"");
+                    Log.i("Upload Util", "准备开始上传mc数据：" + fileName);
+                    /*----Add SendFile Code----*/
+                    sendFiletoServer.setTimeOut(350);  //60 means 60 seconds, 120 means 2 minutes
+                    sendFiletoServer.upload(
+                            file, fileName, MediaType.parse("text/csv"),
+                            server + "api/file",
+                            new HashMap<String, String>(){
+                                {
+                                    put("uid", FileUtil.readFile(filepath, "info"));
+                                    put("type", "mc");
+                                }
+                            }
+                    );
+                }
+        );
+    }
+
 
     public static void getMcData()  {
 
@@ -160,7 +210,7 @@ public class UploadUtil {
                     public void run() {
                         Request request = new Request.Builder()
                                 .addHeader("Connection","keep-alive")
-                                .url(server + "/api/mc-data/" + FileUtil.readFile(filepath, "info"))
+                                .url(server + "api/mc-data/" + FileUtil.readFile(filepath, "info"))
                                 .get()
                                 .build();
                         client.newCall(request).enqueue(new McDataCallbackService());
@@ -168,5 +218,6 @@ public class UploadUtil {
                 }
         ).start();
     }
+
 
 }

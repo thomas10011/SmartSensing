@@ -27,6 +27,7 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -73,9 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Intent sensorIntent;
     private SensorService sensorService;
 
+    private static String mcDataPath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MainActivity.mcDataPath = this.getExternalFilesDir("").toString() + "/mc/";
         FileUtil.generateUUID(this.getExternalFilesDir("").toString() + "/");
         FileUtil.readFile(this.getExternalFilesDir("").toString(), "/" + "info");
         setContentView(R.layout.activity_main);
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 允许再主线程中进行网络请求
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
-        mcData = new ArrayList<String>();
+        mcData = FileUtil.readFileByLine(this.getExternalFilesDir("").toString() + "/mc/", "data.txt");
         adapter = new ArrayAdapter<String>(
                 MainActivity.this, android.R.layout.simple_list_item_single_choice, mcData
         );
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView.setSelection(0);
         McDataCallbackService.registerMcData(mcData, adapter);
         McDataCallbackService.registerActivity(this);
-        UploadUtil.getMcData();
+        // UploadUtil.getMcData();
         unLockText = findViewById(R.id.unLockText);
 
         // 获取传感器服务
@@ -223,8 +228,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(v.getId() == R.id.bt_upload) {
                 Log.i("Main Activity", "-----------用户主动上传文件---------");
-                UploadUtil.uploadSensorData();
-                UploadUtil.uploadMcData(mcData);
+                UploadUtil.execUploadData("acceleration");
+                UploadUtil.uploadMcFile();
+                // UploadUtil.uploadMcData(mcData);
             }
             else if(v.getId() == R.id.add_record) {
                 Log.d("Main Activity", "添加数据");
@@ -243,14 +249,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         datePicker = new DatePickerDialog(
                 this,
-                new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        LocalDate date = LocalDate.of(year, month + 1, dayOfMonth);
-                        Log.d("TAG", "onDateSet: " + date.toString());
-                        mcData.add(date.toString());adapter.notifyDataSetChanged();
-                    }
+                (view, year, month, dayOfMonth) -> {
+                    LocalDate date = LocalDate.of(year, month + 1, dayOfMonth);
+                    Log.d("TAG", "onDateSet: " + date.toString());
+                    mcData.add(date.toString());adapter.notifyDataSetChanged();
+                    FileUtil.writeFile(MainActivity.mcDataPath, "data.txt", mcData);
+                    UploadUtil.uploadMcFile();
                 },
                 2020,5,30
             );
@@ -267,6 +271,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("Main Activity", "删除第" + selectedPosition + "条数据");
                     if (!mcData.isEmpty()) {
                         mcData.remove(selectedPosition);adapter.notifyDataSetChanged();
+                        FileUtil.writeFile(MainActivity.mcDataPath, "data.txt", mcData);
+                        UploadUtil.uploadMcFile();
                     }
 
         });

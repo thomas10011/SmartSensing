@@ -3,11 +3,16 @@ package cn.edu.whu.smartsensing.util;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class FileUtil {
@@ -22,6 +27,7 @@ public class FileUtil {
             Log.i("File Util", "新生成了UUID：" + id);
             return id;
         }
+        makeFile(UUIDPath + "/mc/", "data.txt");
         return null;
     }
 
@@ -46,21 +52,55 @@ public class FileUtil {
     }
 
     /**
+     * 覆盖写入data
+     */
+    public static void writeFile(String filePath, String fileName, List<String> data) {
+        try {
+            File dir = new File(filePath);
+            File dest = new File(filePath + fileName);
+            if(!dir.exists()) {
+                dir.mkdirs(); dest.createNewFile();
+            }
+            RandomAccessFile raf = new RandomAccessFile(dest, "rwd");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(dest));
+//            raf.seek(dest.length());
+//            raf.write(date.getBytes());
+//            raf.close();
+            data.forEach(
+                    s -> {
+                        try {
+                            bw.write(s);
+                            bw.newLine();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+            );
+            bw.flush();bw.close();
+        } catch (IOException e) {
+        }
+    }
+
+    /**
      * 按行读取文件
      */
-    public static void readFileByLine(String filePath, String fileName){
+    public static List<String> readFileByLine(String filePath, String fileName){
         try {
             File file = new File(filePath + fileName);
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String strLine = null;
             int lineCount = 1;
+            ArrayList<String> result = new ArrayList<String>();
             while(null != (strLine = bufferedReader.readLine())){
                 Log.i(tag, "第[" + lineCount + "]行数据:[" + strLine + "]");
+                result.add(strLine);
                 lineCount++;
             }
+            return result;
         }
         catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
