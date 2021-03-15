@@ -1,4 +1,4 @@
-package cn.edu.whu.smartsensing.service;
+    package cn.edu.whu.smartsensing.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -31,10 +31,13 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import cn.edu.whu.smartsensing.R;
 import cn.edu.whu.smartsensing.listener.CustomSensorEventListener;
@@ -53,6 +56,8 @@ public class SensorService extends Service implements SensorEventListener {
     private SensorManager mSensorMgr;
     private MediaPlayer mediaPlayer;
 
+    // 开始记录的时间
+    private Long recordStartTime;
     // 上一次记录的时间
     private LocalDateTime lastRecordTime;
     // 上一次屏幕电量时间
@@ -142,8 +147,9 @@ public class SensorService extends Service implements SensorEventListener {
         }
 
         lastRecordTime = LocalDateTime.now();
+        recordStartTime = lastRecordTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
         // 时间戳加data.txt
-        dataFileName = lastRecordTime.toInstant(ZoneOffset.UTC).toEpochMilli() + "-" + "data.txt";
+        dataFileName = recordStartTime + "-" + "data.txt";
 //        audioFileName = lastRecordTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "-" + "audio.pcm";
 
 
@@ -268,9 +274,13 @@ public class SensorService extends Service implements SensorEventListener {
             // consider storing these readings as unit vectors.
             case Sensor.TYPE_ACCELEROMETER:
                 System.arraycopy(sensorEvent.values, 0, accelerometerReading, 0, accelerometerReading.length);
+                // 更新角度数据
+                updateOrientationAngles();
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
                 System.arraycopy(sensorEvent.values, 0, magnetometerReading, 0, magnetometerReading.length);
+                // 更新角度数据
+                updateOrientationAngles();
                 break;
 
             default:
@@ -285,10 +295,10 @@ public class SensorService extends Service implements SensorEventListener {
 
         // 距离上次记录时间过去了10ms则进行记录 同时更新上次记录时间
         if (nowMilliSecond - lastRecordMilliSecond >= 20) {
-            // 更新角度数据
-            updateOrientationAngles();
+            // 记录时间差
+            double duration = (nowMilliSecond - recordStartTime) / (1000.0 * 3600);
             // 写到txt文件中
-            writeData(accelerationX + "," + accelerationY + "," + accelerationZ + "," + gyroscopeX + "," + gyroscopeY + "," + gyroscopeZ + "," + orientationAngles[0] + "," + orientationAngles[1] + "," + orientationAngles[2]);
+            writeData(accelerationX + "," + accelerationY + "," + accelerationZ + "," + gyroscopeX + "," + gyroscopeY + "," + gyroscopeZ + "," + orientationAngles[0] + "," + orientationAngles[1] + "," + orientationAngles[2] + "," + nowMilliSecond + "," + String.format("%.2f", duration));
             lastRecordTime = now;
             // 回调
             if (sensorEventListener != null) {

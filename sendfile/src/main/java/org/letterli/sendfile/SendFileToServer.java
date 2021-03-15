@@ -1,10 +1,8 @@
 package org.letterli.sendfile;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +16,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-public class SendFiletoServer {
+public class SendFileToServer {
 
     // 单例模式
-    private static volatile SendFiletoServer instance;
+    private static volatile SendFileToServer instance;
 
     private final String TAG = "UploadFile";
 
@@ -35,15 +33,15 @@ public class SendFiletoServer {
 
 
     private String responseData;
-    private OkHttpClient client;
+    private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(TIME_OUT, TimeUnit.SECONDS).readTimeout(TIME_OUT,TimeUnit.SECONDS).build();;
 
-    private SendFiletoServer() {}
+    private SendFileToServer() {}
 
-    public static SendFiletoServer getInstance() {
+    public static SendFileToServer getInstance() {
         if(instance == null) {
-            synchronized (SendFiletoServer.class) {
+            synchronized (SendFileToServer.class) {
                 if(instance == null) {
-                    instance = new SendFiletoServer();
+                    instance = new SendFileToServer();
                 }
             }
         }
@@ -52,10 +50,6 @@ public class SendFiletoServer {
 
     public void upload(final String filePath, final String fileName, final MediaType mediaType, final String to_url,@Nullable final Map<String, String> params) {
         Log.i(TAG+"timeout-set", String.valueOf(TIME_OUT));
-        client = new OkHttpClient.Builder()
-                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .readTimeout(TIME_OUT,TimeUnit.SECONDS)
-                .build();
         synchronized (this) {
             new Thread(
                 new Runnable() {
@@ -92,8 +86,14 @@ public class SendFiletoServer {
                             response = client.newCall(request).execute();
                             responseData = response.body().string();
                             Log.i(TAG, responseData);
-                        } catch (IOException e) {
+                        }
+                        catch (NullPointerException e) {
                             e.printStackTrace();
+                            Log.e(TAG, "run: 服务器返回控响应体", e);
+                        }
+                        catch (IOException e) {
+                            e.printStackTrace();
+                            Log.e("up load failed: ", "上传文件出现IOException.【SendFileToServer】【92行】 ");
                         }
                     }
                 }
