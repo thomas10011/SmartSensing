@@ -37,16 +37,16 @@ public class McDataCallbackService implements Callback {
         Log.i("回调成功！", "");
 
         activity.runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            activity.updateMcData(com.alibaba.fastjson.JSON.parseArray(response.body().string()).toJavaList(String.class));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        activity.updateMcData(com.alibaba.fastjson.JSON.parseArray(response.body().string()).toJavaList(String.class));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
+            }
         );
     }
 }

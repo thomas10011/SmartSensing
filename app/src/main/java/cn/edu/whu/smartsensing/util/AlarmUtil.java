@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import cn.edu.whu.smartsensing.service.UploadService;
 
@@ -44,11 +45,13 @@ public class AlarmUtil {
 
     @SuppressLint("NewApi")
     public void getUpAlarmManagerStartWork() {
+        Random random = new Random(114514);
 
-        calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY,12);
-        calendar.set(Calendar.MINUTE,5);
-        calendar.set(Calendar.SECOND,40);
+        Calendar calendar = Calendar.getInstance();
+        // 18:00 到 23:59
+        calendar.set(Calendar.HOUR_OF_DAY, 18 + random.nextInt(6));
+        calendar.set(Calendar.MINUTE, random.nextInt(60));
+        calendar.set(Calendar.SECOND, 0);//这里代表 21.14.00
 
         //版本适配 System.currentTimeMillis()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {// 6.0及以上
