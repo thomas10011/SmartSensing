@@ -179,7 +179,7 @@ public class SensorService extends Service implements SensorEventListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         NotificationManager manager = (NotificationManager)getSystemService (NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel("123456","smart sensing", NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel("123456","mc tracking", NotificationManager.IMPORTANCE_HIGH);
         manager.createNotificationChannel(channel);
 
         PendingIntent pendingIntent =
@@ -187,7 +187,7 @@ public class SensorService extends Service implements SensorEventListener {
 
         Notification notification =
                 new Notification.Builder(this, "123456")
-                        .setContentTitle("Smart Sensing")
+                        .setContentTitle("MC Tracking")
                         .setContentText("正在后台记录数据")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentIntent(pendingIntent)
