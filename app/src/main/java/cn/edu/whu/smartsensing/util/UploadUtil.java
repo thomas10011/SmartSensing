@@ -1,36 +1,22 @@
 package cn.edu.whu.smartsensing.util;
 
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.Nullable;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.support.hsf.HSFJSONUtils;
-
-import org.json.JSONArray;
-import org.letterli.sendfile.SendFiletoServer;
+import org.letterli.sendfile.SendFileToServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import cn.edu.whu.smartsensing.service.FileListCallbackService;
 import cn.edu.whu.smartsensing.service.McDataCallbackService;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -38,7 +24,7 @@ import okhttp3.Response;
 
 public class UploadUtil {
 
-    private static final SendFiletoServer sendFiletoServer = SendFiletoServer.getInstance();
+    private static final SendFileToServer sendFiletoServer = SendFileToServer.getInstance();
     private static final int TIME_OUT = 60*1000;                          //超时时间为60s*1000 = 1000min
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(TIME_OUT, TimeUnit.SECONDS).readTimeout(TIME_OUT,TimeUnit.SECONDS).build();;

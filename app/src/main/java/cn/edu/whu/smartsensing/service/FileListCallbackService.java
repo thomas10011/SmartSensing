@@ -30,8 +30,8 @@ public class FileListCallbackService implements Callback {
     public void onResponse(Call call, Response response) {
         Map<String, String> res;
         try {
-            res = com.alibaba.fastjson.JSON.parseArray(
-                response.body().string()).stream().collect(Collectors.toMap(
+            res = com.alibaba.fastjson.JSON.parseArray(response.body().string()).stream().collect(
+                Collectors.toMap(
                     o -> o.toString().split(",")[0],
                     o -> o.toString().split(",")[1]
                 )

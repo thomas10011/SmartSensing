@@ -112,8 +112,8 @@
 
     <Button
         android:id="@+id/bt_start"
-        android:layout_width="168dp"
-        android:layout_height="72dp"
+        android:layout_width="120dp"
+        android:layout_height="64dp"
         android:layout_marginStart="28dp"
         android:layout_marginBottom="20dp"
         android:text="@string/startRecord"
@@ -123,8 +123,8 @@
 
     <Button
         android:id="@+id/bt_stop"
-        android:layout_width="166dp"
-        android:layout_height="72dp"
+        android:layout_width="120dp"
+        android:layout_height="62dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="20dp"
         android:text="@string/stopRecord"
@@ -134,8 +134,8 @@
 
     <Button
         android:id="@+id/bt_upload"
-        android:layout_width="166dp"
-        android:layout_height="72dp"
+        android:layout_width="120dp"
+        android:layout_height="64dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="12dp"
         android:onClick="onClick"
