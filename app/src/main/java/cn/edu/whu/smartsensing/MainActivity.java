@@ -214,7 +214,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sensorIntent = new Intent(this, SensorService.class);
                 startForegroundService(sensorIntent);
                 bindService(sensorIntent, connection, BIND_AUTO_CREATE);
-
+                // 通知服务器开始记录数据
+                UploadUtil.notifyServer();
 
             }
             else if(v.getId()== R.id.bt_stop)

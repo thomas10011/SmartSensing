@@ -174,6 +174,8 @@ public class SensorService extends Service implements SensorEventListener {
         filter.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenReceiver, filter);
 
+        // recordAudio();
+
     }
 
     @Override
@@ -222,7 +224,11 @@ public class SensorService extends Service implements SensorEventListener {
         boolean result = mSensorMgr.flush(this);
         if (result) { Log.i("sensor service", "flush成功"); }
         else { Log.i("sensor service", "flush失败"); }
+        // stopRecordAudio();
+
         stopSelf();
+
+
 
     };
 
@@ -230,9 +236,9 @@ public class SensorService extends Service implements SensorEventListener {
     public void initAudioRecord() {
 
         // 计算最小缓冲区
-        bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig, audioFormat);
+        bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat);
         // 创建AudioRecorder对象
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRateInHz,channelConfig, audioFormat, bufferSize);
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRateInHz, channelConfig, audioFormat, bufferSize);
 
         parent = FileUtil.makeFileDirectory(this.getExternalFilesDir("").toString()+ "/AudioRecord/");
 
@@ -412,7 +418,7 @@ public class SensorService extends Service implements SensorEventListener {
             switch (state) {
                 case TelephonyManager.CALL_STATE_IDLE:
                     //空闲状态
-                    stopRecordAudio();
+                    // stopRecordAudio();
                     System.out.println("电话空闲");
                     break;
 
@@ -422,7 +428,7 @@ public class SensorService extends Service implements SensorEventListener {
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK:
                     // 摘机状态（接听）
-                    recordAudio();
+                    // recordAudio();
                     System.out.println("接听电话");
                     break;
             }

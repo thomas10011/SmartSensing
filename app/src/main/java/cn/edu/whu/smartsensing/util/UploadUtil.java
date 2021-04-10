@@ -107,39 +107,6 @@ public class UploadUtil {
         );
     }
 
-    public static void uploadMcData(List<String> date) {
-        new Thread(
-            new Runnable() {
-                @Override
-                public void run() {
-                    //准备文件与传入参数
-
-                    RequestBody requestBody = RequestBody.create(JSON, com.alibaba.fastjson.JSON.toJSONString(date));
-                    try {
-                        Log.d(TAG+" requestBody", String.valueOf(requestBody.contentLength()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    Request request = new Request.Builder()
-                            .addHeader("Connection","keep-alive")
-                            .url(server + "api/mc-data/" + FileUtil.readFile(filepath, "info"))
-                            .post(requestBody)
-                            .build();
-                    Log.i(TAG+" request", String.valueOf(request.body()));
-
-                    Response response = null;
-                    try {
-                        response = client.newCall(request).execute();
-                        String responseData = response.body().string();
-                        Log.i(TAG, responseData);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        ).start();
-    }
 
     public static void uploadMcFile() {
         // 始终上传更新
@@ -163,7 +130,7 @@ public class UploadUtil {
         );
     }
 
-    public static void getMcData()  {
+    public static void notifyServer()  {
 
         new Thread(
             new Runnable() {
@@ -171,10 +138,15 @@ public class UploadUtil {
                 public void run() {
                     Request request = new Request.Builder()
                             .addHeader("Connection","keep-alive")
-                            .url(server + "api/mc-data/" + FileUtil.readFile(filepath, "info"))
+                            .url(server + "api/notice/" + FileUtil.readFile(filepath, "info"))
                             .get()
                             .build();
-                    client.newCall(request).enqueue(new McDataCallbackService());
+                    try {
+                        client.newCall(request).execute();
+                    }
+                    catch (IOException e) {
+                        Log.e(TAG, "run: 通知服务器用户活动信息时出错");
+                    }
                 }
             }
         ).start();
