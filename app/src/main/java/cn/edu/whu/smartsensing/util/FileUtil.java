@@ -19,16 +19,15 @@ public class FileUtil {
 
     private static final String tag = "File Util";
 
-    public static String generateUUID(String UUIDPath) {
+    public static void generateUUID(String UUIDPath) {
         String id = UUID.randomUUID().toString();
         File file = new File(UUIDPath + "info");
         if (!file.exists()) {
-            writeTxtToFile(id, UUIDPath, "info");
+            writeTxtToFile("mc-" + id, UUIDPath, "info");
             Log.i("File Util", "新生成了UUID：" + id);
-            return id;
+            return;
         }
         makeFile(UUIDPath + "/mc/", "data.txt");
-        return null;
     }
 
     /**
